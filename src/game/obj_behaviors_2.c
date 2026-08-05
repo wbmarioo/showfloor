@@ -88,6 +88,16 @@ static s32 approach_f32_ptr(f32 *px, f32 target, f32 delta) {
     return FALSE;
 }
 
+static s16 obj_turn_pitch_toward_mario(f32 targetOffsetY, s16 turnAmount) {
+    s16 targetPitch;
+
+    o->oPosY -= targetOffsetY;
+    targetPitch = obj_turn_toward_object(o, gMarioObject, O_MOVE_ANGLE_PITCH_INDEX, turnAmount);
+    o->oPosY += targetOffsetY;
+
+    return targetPitch;
+}
+
 static s32 obj_move_pitch_approach(s16 target, s16 delta) {
     o->oMoveAnglePitch = approach_s16_symmetric(o->oMoveAnglePitch, target, delta);
 
@@ -120,14 +130,6 @@ static s16 random_linear_offset(s16 base, s16 range) {
 
 static void obj_die_if_health_non_positive(void) {
     if (o->oHealth <= 0) {
-        if (o->oDeathSound == 0) {
-            spawn_mist_particles_with_sound(SOUND_OBJ_DEFAULT_DEATH);
-        } else if (o->oDeathSound > 0) {
-            spawn_mist_particles_with_sound(o->oDeathSound);
-        } else {
-            spawn_mist_particles();
-        }
-
         // This doesn't do anything
         obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
 
@@ -221,10 +223,9 @@ struct ObjectHitbox sPiranhaPlantFireHitbox = {
 };
 
 #include "behaviors/flame.inc.c"
-#include "behaviors/horizontal_grindel.inc.c"
 
 void obj_set_speed_to_zero(void) {
     o->oForwardVel = o->oVelY = 0.0f;
 }
 
-#include "behaviors/bird.inc.c"
+#include "behaviors/triplet_butterfly.inc.c"
